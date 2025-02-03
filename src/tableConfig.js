@@ -99,7 +99,7 @@ export const transformData = (data, toApi = false) => {
   const dateToExcelSerial = (dateString) => {
     if (!dateString) return null;
     const date = new Date(dateString);
-    const excelEpoch = new Date(1899, 11, 31);
+    const excelEpoch = new Date(1899, 11, 30);
     const millisecondsPerDay = 86400000;
     return Math.round(
       (date.getTime() - excelEpoch.getTime()) / millisecondsPerDay

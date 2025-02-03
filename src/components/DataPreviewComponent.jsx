@@ -56,7 +56,7 @@ const EditableCell = ({
   rowIndex,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(value ?? ""); 
+  const [editValue, setEditValue] = useState(value ?? "");
 
   const handleSave = () => {
     let processedValue = editValue;
@@ -196,17 +196,6 @@ const DataPreviewComponent = () => {
 
   const rowsPerPage = 10;
 
-  useEffect(() => {
-    if (Object.values(sheets).every((sheet) => sheet.length === 0)) {
-      toast.error(
-        "All sheets are empty or missing some required columns. Redirecting you back to the home page."
-      );
-      setTimeout(() => {
-        navigate("/");
-      }, 3000);
-    }
-  }, [sheets, navigate]);
-
   const handleCellChange = (rowIndex, field, value) => {
     console.log("HandleCellChange Called:", {
       rowIndex,
@@ -281,6 +270,20 @@ const DataPreviewComponent = () => {
       const filteredData =
         Object.keys(transformedSheets).length > 0 ? transformedSheets : {};
       console.log({ data: filteredData });
+      const allSheetsEmpty = Object.values(filteredData).every(
+        (sheet) => !sheet || sheet.length === 0
+      );
+
+      if (allSheetsEmpty) {
+        console.log("Sheets are empty:", filteredData);
+        toast.error(
+          "All sheets are empty or missing some required columns. Redirecting you back to the home page."
+        );
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+        return;
+      }
 
       const response = await axios.post(base_url + "api/import", {
         data: filteredData,
@@ -294,14 +297,15 @@ const DataPreviewComponent = () => {
       );
 
       if (hasSkippedRows) {
-        console.log("Hi");
         navigate("/");
       } else {
         resetState();
         navigate("/");
+        toast.success("All rows were added successfully");
       }
     } catch (error) {
       console.error("Import failed", error);
+      toast.error("Import failed");
     }
   };
 
@@ -395,9 +399,9 @@ const DataPreviewComponent = () => {
                           onChange={handleCellChange}
                           columnConfig={{
                             ...column,
-                            field: column.key, 
+                            field: column.key,
                           }}
-                          rowIndex={rowIndex} 
+                          rowIndex={rowIndex}
                           isInvalid={rowErrors[rowIndex]?.includes(column.key)}
                         />
                       )}

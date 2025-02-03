@@ -27,7 +27,6 @@ export const AppProvider = ({ children }) => {
         setErrors,
         setSkippedRows,
         setIsImported,
-        resetState,
       }}
     >
       {children}
